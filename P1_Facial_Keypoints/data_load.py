@@ -49,6 +49,25 @@ class FacialKeypointsDataset(Dataset):
     
 # tranforms
 
+class RandomMirror(object):
+    """randomly mirror the image in a sample.
+
+    Args:
+        output_size (tuple or int): Desired output size. If int, square crop
+            is made.
+    """
+    def __call__(self, sample):
+        image, key_pts = sample['image'], sample['keypoints']
+
+        h, w = image.shape[:2]
+        image_copy = np.copy(image)
+        key_pts_copy = np.copy(key_pts)
+        if np.random.randint(10) & 1 == 0:
+            image_copy = np.flip(image, axis=1) # horizontal 
+            key_pts_copy[:,0] = w - key_pts[:,0]
+
+        return {'image': image_copy, 'keypoints': key_pts_copy}
+
 class Normalize(object):
     """Convert a color image to grayscale and normalize the color range to [0,1]."""        
 
